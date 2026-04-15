@@ -1,0 +1,2210 @@
+Here is the full **audio-free** version:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>D&D Adventure Simulator Legends+ (4 Party Members, No Audio)</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #171724, #0b0b12);
+      color: #f4f4f4;
+      padding: 18px;
+    }
+    .container {
+      max-width: 1500px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 0 28px rgba(0,0,0,0.35);
+    }
+    h1, h2, h3 { text-align: center; margin-top: 0; }
+    .hidden { display: none !important; }
+
+    .status {
+      text-align: center;
+      font-weight: bold;
+      font-size: 18px;
+      color: #ffd166;
+      margin-bottom: 14px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .pill {
+      background: rgba(255,255,255,0.08);
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .screen, .panel {
+      background: rgba(255,255,255,0.05);
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .title-screen {
+      text-align: center;
+      padding: 40px 20px;
+      background:
+        radial-gradient(circle at top, rgba(255,215,120,0.12), transparent 40%),
+        linear-gradient(180deg, rgba(76,124,255,0.08), rgba(0,0,0,0.15));
+    }
+
+    .title-screen h1 {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      opacity: 0.92;
+      max-width: 860px;
+      margin: 0 auto 18px auto;
+      line-height: 1.5;
+    }
+
+    .button-row, .action-buttons, .target-buttons, .camp-buttons, .upgrade-buttons, .map-buttons, .shop-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 10px;
+      background: #4c7cff;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.2s;
+      position: relative;
+    }
+
+    button:hover {
+      background: #365fd1;
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      background: #666;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    button[data-tip]:hover::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 240px;
+      background: rgba(20,20,30,0.97);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 12px;
+      line-height: 1.35;
+      text-align: left;
+      z-index: 200;
+      pointer-events: none;
+      white-space: normal;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 16px;
+    }
+
+    .sub-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .char-card, .enemy-card, .inv-card, .shop-card {
+      background: rgba(0,0,0,0.2);
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 10px;
+    }
+
+    .dead {
+      opacity: 0.45;
+      text-decoration: line-through;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .portrait {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    .bar-wrap {
+      width: 100%;
+      height: 15px;
+      background: #333;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 5px;
+    }
+
+    .hp-bar { height: 100%; background: #2ecc71; transition: width .3s ease; }
+    .mana-bar { height: 100%; background: #4da3ff; transition: width .3s ease; }
+
+    .small {
+      font-size: 13px;
+      opacity: 0.92;
+      line-height: 1.45;
+    }
+
+    .battlefield {
+      position: relative;
+      min-height: 400px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(0,0,0,0.15));
+    }
+
+    .bg-forest {
+      background:
+        radial-gradient(circle at top, rgba(120,255,140,0.1), transparent 30%),
+        linear-gradient(180deg, #223022, #101812 65%, #0a0d0a);
+    }
+
+    .bg-ruins {
+      background:
+        radial-gradient(circle at top, rgba(120,160,255,0.1), transparent 30%),
+        linear-gradient(180deg, #2a2f40, #171b26 65%, #0a0c12);
+    }
+
+    .bg-troll {
+      background:
+        radial-gradient(circle at top, rgba(190,160,110,0.12), transparent 30%),
+        linear-gradient(180deg, #3b3329, #201a14 65%, #0d0b09);
+    }
+
+    .bg-swamp {
+      background:
+        radial-gradient(circle at top, rgba(120,220,160,0.11), transparent 30%),
+        linear-gradient(180deg, #22332f, #12201c 65%, #08110d);
+    }
+
+    .bg-fortress {
+      background:
+        radial-gradient(circle at top, rgba(200,120,220,0.10), transparent 30%),
+        linear-gradient(180deg, #332640, #1b1322 65%, #0c0911);
+    }
+
+    .bg-dragon {
+      background:
+        radial-gradient(circle at top, rgba(255,100,60,0.16), transparent 32%),
+        linear-gradient(180deg, #40201c, #1d1110 65%, #090707);
+    }
+
+    .battle-label {
+      position: absolute;
+      top: 10px;
+      left: 12px;
+      right: 12px;
+      text-align: center;
+      font-weight: bold;
+      color: #ffe9a8;
+      text-shadow: 0 0 8px rgba(0,0,0,0.4);
+      z-index: 5;
+    }
+
+    #diceFlash {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      min-width: 120px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(20,20,30,0.92);
+      border: 1px solid rgba(255,255,255,0.16);
+      color: #fff;
+      font-weight: bold;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 50;
+      transform: scale(0.9);
+    }
+
+    #diceFlash.show {
+      animation: dicePop 0.9s ease-out forwards;
+    }
+
+    #diceFlash.attack {
+      box-shadow: 0 0 18px rgba(255, 209, 102, 0.35);
+    }
+
+    #diceFlash.damage {
+      box-shadow: 0 0 18px rgba(255, 123, 123, 0.35);
+    }
+
+    #diceFlash.heal {
+      box-shadow: 0 0 18px rgba(125, 255, 153, 0.35);
+    }
+
+    .heroes-row, .enemies-row {
+      position: absolute;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-evenly;
+      align-items: flex-end;
+      padding: 0 16px;
+      gap: 10px;
+    }
+
+    .heroes-row { bottom: 20px; }
+    .enemies-row { top: 70px; }
+
+    .sprite {
+      text-align: center;
+      width: 110px;
+      position: relative;
+      animation: bob 2s ease-in-out infinite;
+    }
+
+    .sprite.enemy.phase2 .sprite-icon {
+      filter: drop-shadow(0 0 12px rgba(255,80,80,0.7));
+      transform: scale(1.1);
+    }
+
+    .sprite-icon {
+      font-size: 52px;
+      margin-bottom: 4px;
+      transition: 0.2s;
+      user-select: none;
+      position: relative;
+      z-index: 2;
+    }
+
+    .sprite-name {
+      font-size: 13px;
+      font-weight: bold;
+      position: relative;
+      z-index: 2;
+    }
+
+    .sprite-slot {
+      font-size: 12px;
+      opacity: 0.85;
+      position: relative;
+      z-index: 2;
+    }
+
+    .targetable .sprite-icon {
+      cursor: pointer;
+      outline: 2px solid rgba(255,230,120,0.5);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.06);
+      padding: 6px;
+    }
+
+    .targetable:hover .sprite-icon {
+      transform: scale(1.1);
+    }
+
+    .effect {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+      animation-duration: 0.5s;
+      animation-fill-mode: forwards;
+    }
+
+    .effect.slash {
+      background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,0.85) 48%, transparent 60%);
+      animation-name: slashFx;
+    }
+
+    .effect.fire {
+      background: radial-gradient(circle, rgba(255,120,70,0.8) 0%, rgba(255,80,40,0.3) 45%, transparent 70%);
+      animation-name: pulseFx;
+    }
+
+    .effect.holy {
+      background: radial-gradient(circle, rgba(255,240,180,0.8) 0%, rgba(255,240,180,0.2) 45%, transparent 70%);
+      animation-name: pulseFx;
+    }
+
+    .effect.shadow {
+      background: radial-gradient(circle, rgba(170,120,255,0.75) 0%, rgba(120,80,200,0.2) 45%, transparent 70%);
+      animation-name: pulseFx;
+    }
+
+    .effect.music {
+      background: radial-gradient(circle, rgba(120,220,255,0.7) 0%, rgba(120,220,255,0.16) 45%, transparent 70%);
+      animation-name: pulseFx;
+    }
+
+    .floating-number {
+      position: absolute;
+      font-weight: bold;
+      pointer-events: none;
+      animation: floatUp 1s ease-out forwards;
+      text-shadow: 0 0 6px rgba(0,0,0,0.6);
+      z-index: 20;
+    }
+
+    .damage-num { color: #ff7b7b; }
+    .heal-num { color: #7dff99; }
+    .mana-num { color: #7db8ff; }
+
+    .status-tag {
+      display: inline-block;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.1);
+      margin: 2px 4px 0 0;
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0px); }
+      100% { opacity: 0; transform: translateY(-40px); }
+    }
+
+    @keyframes bob {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-4px); }
+      100% { transform: translateY(0px); }
+    }
+
+    @keyframes slashFx {
+      0% { opacity: 0; transform: translateX(-40px) skewX(-20deg); }
+      30% { opacity: 1; }
+      100% { opacity: 0; transform: translateX(30px) skewX(-20deg); }
+    }
+
+    @keyframes pulseFx {
+      0% { opacity: 0; transform: scale(0.6); }
+      40% { opacity: 1; }
+      100% { opacity: 0; transform: scale(1.15); }
+    }
+
+    @keyframes dicePop {
+      0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(-8px);
+      }
+      20% {
+        opacity: 1;
+        transform: scale(1.05) translateY(0);
+      }
+      75% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0.98) translateY(-4px);
+      }
+    }
+
+    .turn-banner {
+      text-align: center;
+      font-size: 17px;
+      color: #a0e7e5;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .log {
+      background: #08080d;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 14px;
+      min-height: 240px;
+      max-height: 360px;
+      overflow-y: auto;
+      white-space: pre-line;
+      line-height: 1.5;
+    }
+
+    .turn-order-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .turn-chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      font-size: 12px;
+    }
+
+    .turn-chip.active {
+      background: rgba(255,209,102,0.24);
+      border-color: rgba(255,209,102,0.45);
+    }
+
+    .map-node {
+      background: rgba(255,255,255,0.07);
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      min-width: 180px;
+      text-align: center;
+    }
+
+    .footer-note {
+      text-align: center;
+      opacity: 0.8;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 1050px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .sub-grid { grid-template-columns: 1fr; }
+      .sprite { width: 82px; }
+      .sprite-icon { font-size: 40px; }
+      .battlefield { min-height: 440px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="titleScreen" class="screen title-screen">
+      <h1>D&D Adventure Simulator Legends+</h1>
+      <p class="subtitle">
+        Choose a four-hero party from seven classes, travel through a branching adventure,
+        unlock new spells, visit shops, manage status effects, and defeat a multi-phase dragon.
+      </p>
+      <div class="button-row">
+        <button onclick="showPartySelect()">New Game</button>
+        <button onclick="loadGame()">Load Saved Game</button>
+      </div>
+    </div>
+
+    <div id="selectionPanel" class="panel hidden">
+      <h2>Choose 4 Heroes</h2>
+      <p class="small" style="text-align:center;">Available classes: Fighter, Wizard, Cleric, Rogue, Paladin, Warlock, Bard</p>
+      <div class="button-row">
+        <button onclick="toggleClassSelection('Fighter')">Fighter ⚔️</button>
+        <button onclick="toggleClassSelection('Wizard')">Wizard 🪄</button>
+        <button onclick="toggleClassSelection('Cleric')">Cleric ✨</button>
+        <button onclick="toggleClassSelection('Rogue')">Rogue 🗡️</button>
+        <button onclick="toggleClassSelection('Paladin')">Paladin 🛡️</button>
+        <button onclick="toggleClassSelection('Warlock')">Warlock 🔮</button>
+        <button onclick="toggleClassSelection('Bard')">Bard 🎵</button>
+      </div>
+      <p class="small" id="selectedClassesText" style="text-align:center;">Selected: none</p>
+      <div class="button-row">
+        <button onclick="startGame()">Begin Adventure</button>
+      </div>
+    </div>
+
+    <div id="gameUI" class="hidden">
+      <div class="status" id="statusText">Choose your actions.</div>
+
+      <div class="topbar">
+        <div class="pill" id="goldText">Gold: 0</div>
+        <div class="pill" id="encounterText">Encounter: -</div>
+        <div class="pill" id="pathText">Path: -</div>
+      </div>
+
+      <div id="mapPanel" class="panel hidden">
+        <h2>Choose Your Path</h2>
+        <div class="map-buttons" id="mapButtons"></div>
+        <div class="footer-note">Different routes offer different enemies, items, and rewards.</div>
+      </div>
+
+      <div id="campPanel" class="panel hidden">
+        <h2>Camp</h2>
+        <div id="campSummary" class="small" style="text-align:center;">Your party regroups.</div>
+        <div class="camp-buttons" id="campButtons"></div>
+        <div id="shopArea" class="shop-card">
+          <h3>Item Shop</h3>
+          <div class="small">Buy better gear and supplies. Equipment automatically changes some attacks.</div>
+          <div class="shop-buttons" id="shopButtons"></div>
+        </div>
+      </div>
+
+      <div class="main-grid">
+        <div>
+          <div id="battlefield" class="battlefield bg-forest">
+            <div class="battle-label" id="battleLabel">Battlefield</div>
+            <div id="diceFlash"></div>
+            <div class="enemies-row" id="enemySprites"></div>
+            <div class="heroes-row" id="heroSprites"></div>
+          </div>
+
+          <div class="panel">
+            <h3>Turn Order</h3>
+            <div id="turnOrderList" class="turn-order-list"></div>
+          </div>
+
+          <div class="panel">
+            <div class="turn-banner" id="turnBanner">No turn yet.</div>
+            <h3>Actions</h3>
+            <div class="action-buttons" id="actionButtons">
+              <button disabled>Waiting...</button>
+            </div>
+            <div class="target-buttons" id="targetButtons"></div>
+            <div class="footer-note">Hover over an action to see exactly what it does.</div>
+          </div>
+
+          <div id="upgradePanel" class="panel hidden">
+            <h3>Choose an Upgrade</h3>
+            <div id="upgradeSummary" class="small" style="text-align:center;">A hero is ready to grow stronger.</div>
+            <div class="upgrade-buttons" id="upgradeButtons"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="sub-grid">
+            <div class="panel">
+              <h3>Your Party</h3>
+              <div id="partyInfo"></div>
+            </div>
+
+            <div class="panel">
+              <h3>Enemies</h3>
+              <div id="enemyInfo"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Inventory & Equipment</h3>
+            <div id="inventoryInfo"></div>
+          </div>
+
+          <div class="panel">
+            <h3>Battle Log</h3>
+            <div id="battleLog" class="log"></div>
+            <div class="button-row">
+              <button onclick="saveGame()">Save Game</button>
+              <button onclick="loadGame()">Load Game</button>
+              <button onclick="restartGame()">Restart Adventure</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SAVE_KEY = "dnd_legends_plus_save_v1";
+
+    const portraits = {
+      Fighter: "⚔️",
+      Wizard: "🪄",
+      Cleric: "✨",
+      Rogue: "🗡️",
+      Paladin: "🛡️",
+      Warlock: "🔮",
+      Bard: "🎵",
+      Goblin: "👺",
+      Archer: "🏹",
+      Troll: "🧌",
+      Cultist: "🕯️",
+      Drake: "🦎",
+      Dragon: "🐉"
+    };
+
+    const classTemplates = {
+      Fighter: {
+        className: "Fighter", maxHp: 62, maxMana: 0, armorClass: 16, attackBonus: 6, initiativeBonus: 1, equipment: "Iron Sword",
+        actions: [
+          { name: "Longsword", type: "attack", damage: [1,8,4], bonus: 0, text: "slashes with a longsword", effect: "slash", tip: "A balanced melee attack. Equipment may improve this." },
+          { name: "Power Strike", type: "attack", damage: [2,6,4], bonus: -2, text: "swings with brutal force", effect: "slash", tip: "More damage, less accurate." },
+          { name: "Shield Bash", type: "attack", damage: [1,6,2], bonus: 1, text: "slams forward with a shield", effect: "slash", tip: "More accurate than Power Strike." },
+          { name: "Second Wind", type: "healSelf", heal: [1,10,6], text: "takes a breath and regains strength", effect: "holy", tip: "Recover your own HP." },
+          { name: "Defend", type: "defend", text: "raises a strong defense", tip: "Halves incoming damage until next round." }
+        ]
+      },
+      Wizard: {
+        className: "Wizard", maxHp: 34, maxMana: 24, armorClass: 12, attackBonus: 5, initiativeBonus: 2, equipment: "Oak Wand",
+        actions: [
+          { name: "Fire Bolt", type: "attack", damage: [1,10,3], bonus: 1, manaCost: 0, text: "casts Fire Bolt", effect: "fire", tip: "Basic ranged spell. Good accuracy." },
+          { name: "Magic Missile", type: "auto", damage: [3,4,3], manaCost: 3, text: "casts Magic Missile", effect: "shadow", tip: "Always hits one target." },
+          { name: "Ice Lance", type: "attack", damage: [2,6,2], bonus: 0, manaCost: 2, text: "launches an Ice Lance", effect: "music", tip: "Reliable direct spell damage." },
+          { name: "Arcane Storm", type: "attackAll", damage: [1,8,2], manaCost: 5, text: "unleashes Arcane Storm", effect: "shadow", tip: "Hits every enemy." },
+          { name: "Meditate", type: "restoreMana", manaGain: [1,6,4], text: "meditates to recover mana", effect: "music", tip: "Restore mana instead of attacking." }
+        ]
+      },
+      Cleric: {
+        className: "Cleric", maxHp: 48, maxMana: 22, armorClass: 15, attackBonus: 5, initiativeBonus: 0, equipment: "Holy Symbol",
+        actions: [
+          { name: "Mace", type: "attack", damage: [1,8,3], bonus: 0, manaCost: 0, text: "strikes with a mace", effect: "slash", tip: "Basic weapon attack. Equipment may strengthen this." },
+          { name: "Sacred Flame", type: "attack", damage: [2,6,2], bonus: 0, manaCost: 2, text: "calls down Sacred Flame", effect: "holy", tip: "Holy single-target spell." },
+          { name: "Healing Word", type: "healAlly", heal: [1,8,5], manaCost: 3, text: "utters a healing prayer", effect: "holy", tip: "Heal one ally." },
+          { name: "Mass Prayer", type: "healParty", heal: [1,6,3], manaCost: 5, text: "blesses the entire party", effect: "holy", tip: "Heal the whole party." },
+          { name: "Defend", type: "defend", text: "takes a guarded holy stance", tip: "Halves incoming damage until next round." }
+        ]
+      },
+      Rogue: {
+        className: "Rogue", maxHp: 42, maxMana: 0, armorClass: 14, attackBonus: 7, initiativeBonus: 4, equipment: "Shadow Daggers",
+        actions: [
+          { name: "Dagger", type: "attack", damage: [1,6,4], bonus: 1, text: "stabs with a dagger", effect: "slash", tip: "Fast, accurate attack." },
+          { name: "Sneak Attack", type: "attack", damage: [2,6,5], bonus: 0, text: "lands a Sneak Attack", effect: "shadow", tip: "Big single-target damage." },
+          { name: "Poison Blade", type: "attackPoison", damage: [1,8,5], bonus: -1, text: "cuts with a poisoned blade", effect: "shadow", tip: "Deals damage and may apply Poisoned." },
+          { name: "Quick Shot", type: "attack", damage: [1,6,3], bonus: 2, text: "fires a quick shot", effect: "slash", tip: "Very accurate ranged attack." },
+          { name: "Defend", type: "defend", text: "slips into a guarded stance", tip: "Halves incoming damage until next round." }
+        ]
+      },
+      Paladin: {
+        className: "Paladin", maxHp: 58, maxMana: 14, armorClass: 17, attackBonus: 6, initiativeBonus: 0, equipment: "Blessed Hammer",
+        actions: [
+          { name: "Hammer Strike", type: "attack", damage: [1,8,4], bonus: 0, manaCost: 0, text: "brings down a blessed hammer", effect: "slash", tip: "Strong frontline attack." },
+          { name: "Divine Smite", type: "attack", damage: [2,8,4], bonus: -1, manaCost: 4, text: "channels radiant justice", effect: "holy", tip: "Heavy holy damage." },
+          { name: "Lay on Hands", type: "healAlly", heal: [2,6,5], manaCost: 3, text: "lays on healing hands", effect: "holy", tip: "Strong ally heal." },
+          { name: "Sanctuary", type: "buffParty", manaCost: 4, text: "raises a field of divine protection", effect: "holy", buff: "blessed", tip: "Applies Blessed to the whole party for 3 turns." },
+          { name: "Defend", type: "defend", text: "raises a shining shield", tip: "Halves incoming damage until next round." }
+        ]
+      },
+      Warlock: {
+        className: "Warlock", maxHp: 38, maxMana: 20, armorClass: 13, attackBonus: 6, initiativeBonus: 2, equipment: "Void Focus",
+        actions: [
+          { name: "Eldritch Blast", type: "attack", damage: [2,6,3], bonus: 1, manaCost: 0, text: "fires Eldritch Blast", effect: "shadow", tip: "Reliable ranged magic." },
+          { name: "Hex Bolt", type: "attackWeaken", damage: [2,8,3], bonus: 0, manaCost: 3, text: "launches a Hex Bolt", effect: "shadow", debuff: "weakened", tip: "Deals damage and may apply Weakened." },
+          { name: "Soul Drain", type: "attackDrain", damage: [1,8,3], bonus: 0, manaCost: 4, text: "drains the enemy's life", effect: "shadow", tip: "Deal damage and heal yourself." },
+          { name: "Dark Pulse", type: "attackAll", damage: [1,6,3], manaCost: 5, text: "releases a Dark Pulse", effect: "shadow", tip: "Hits all enemies." },
+          { name: "Channel Pact", type: "restoreMana", manaGain: [1,6,5], text: "channels forbidden power", effect: "shadow", tip: "Restore mana." }
+        ]
+      },
+      Bard: {
+        className: "Bard", maxHp: 40, maxMana: 18, armorClass: 14, attackBonus: 5, initiativeBonus: 3, equipment: "Silver Lute",
+        actions: [
+          { name: "Rapier", type: "attack", damage: [1,8,3], bonus: 1, manaCost: 0, text: "lunges with a rapier", effect: "slash", tip: "Quick, accurate strike." },
+          { name: "Song of Mending", type: "healAlly", heal: [2,4,4], manaCost: 3, text: "sings a restorative melody", effect: "music", tip: "Heal one ally." },
+          { name: "Inspiring Chorus", type: "buffParty", manaCost: 4, text: "fills the party with courage", effect: "music", buff: "inspired", tip: "Applies Inspired to the whole party for 3 turns." },
+          { name: "Thunder Chord", type: "attackAll", damage: [1,6,2], manaCost: 5, text: "strikes a thunderous chord", effect: "music", tip: "Hits every enemy." },
+          { name: "Encore", type: "restoreMana", manaGain: [1,6,3], text: "gathers focus for another verse", effect: "music", tip: "Restore mana." }
+        ]
+      }
+    };
+
+    const equipmentCatalog = {
+      "Steel Sword": { className: "Fighter", cost: 35, desc: "Longsword damage +2, Power Strike +2", apply: hero => hero.equipment = "Steel Sword" },
+      "Battle Axe": { className: "Fighter", cost: 40, desc: "Power Strike damage +4, accuracy -1 more", apply: hero => hero.equipment = "Battle Axe" },
+
+      "Runed Wand": { className: "Wizard", cost: 40, desc: "Fire Bolt and Magic Missile deal +2 damage", apply: hero => hero.equipment = "Runed Wand" },
+      "Crystal Staff": { className: "Wizard", cost: 50, desc: "Spell damage +1 and max mana +4", apply: hero => hero.equipment = "Crystal Staff" },
+
+      "Blessed Mace": { className: "Cleric", cost: 35, desc: "Mace and Sacred Flame deal +2 damage", apply: hero => hero.equipment = "Blessed Mace" },
+      "Sun Relic": { className: "Cleric", cost: 45, desc: "Healing spells heal +2 and max mana +3", apply: hero => hero.equipment = "Sun Relic" },
+
+      "Twin Daggers": { className: "Rogue", cost: 35, desc: "Dagger and Sneak Attack deal +2 damage", apply: hero => hero.equipment = "Twin Daggers" },
+      "Venom Edge": { className: "Rogue", cost: 45, desc: "Poison Blade more likely to poison and deals +2 damage", apply: hero => hero.equipment = "Venom Edge" },
+
+      "Holy Blade": { className: "Paladin", cost: 40, desc: "Hammer Strike and Divine Smite deal +2 damage", apply: hero => hero.equipment = "Holy Blade" },
+      "Guardian Shield": { className: "Paladin", cost: 45, desc: "+1 AC and Sanctuary lasts longer", apply: hero => hero.equipment = "Guardian Shield" },
+
+      "Soul Rod": { className: "Warlock", cost: 40, desc: "Eldritch Blast and Hex Bolt deal +2 damage", apply: hero => hero.equipment = "Soul Rod" },
+      "Void Grimoire": { className: "Warlock", cost: 50, desc: "Dark magic +1 damage and max mana +4", apply: hero => hero.equipment = "Void Grimoire" },
+
+      "Master Lute": { className: "Bard", cost: 35, desc: "Music spells heal or damage +2", apply: hero => hero.equipment = "Master Lute" },
+      "Silver Rapier": { className: "Bard", cost: 30, desc: "Rapier damage +2", apply: hero => hero.equipment = "Silver Rapier" }
+    };
+
+    const mapStages = [
+      [
+        {
+          label: "Forest Ambush",
+          encounter: {
+            name: "Goblin Ambush", bg: "bg-forest", goldReward: 25, itemReward: "Potion", intro: "Three goblins rush from the trees.",
+            enemies: [
+              { name: "Goblin", slot: "Left", maxHp: 18, armorClass: 12, attackBonus: 4, damage: [1,6,2], initiativeBonus: 2, text: "slashes with a jagged knife", ai: "aggressive" },
+              { name: "Goblin", slot: "Center", maxHp: 18, armorClass: 12, attackBonus: 4, damage: [1,6,2], initiativeBonus: 2, text: "lunges with a short spear", ai: "aggressive" },
+              { name: "Goblin", slot: "Right", maxHp: 18, armorClass: 12, attackBonus: 4, damage: [1,6,2], initiativeBonus: 2, text: "swings a rusty blade", ai: "aggressive" }
+            ]
+          }
+        },
+        {
+          label: "Ruined Watchpost",
+          encounter: {
+            name: "Goblin Archers", bg: "bg-ruins", goldReward: 30, itemReward: "Mana Crystal", intro: "Goblin archers occupy the ruins.",
+            enemies: [
+              { name: "Archer", slot: "Left", maxHp: 16, armorClass: 12, attackBonus: 5, damage: [1,6,3], initiativeBonus: 3, text: "fires a sharp arrow", ai: "sniper" },
+              { name: "Goblin", slot: "Center", maxHp: 20, armorClass: 13, attackBonus: 4, damage: [1,6,2], initiativeBonus: 2, text: "charges with a chipped blade", ai: "aggressive" },
+              { name: "Archer", slot: "Right", maxHp: 16, armorClass: 12, attackBonus: 5, damage: [1,6,3], initiativeBonus: 3, text: "fires a sharp arrow", ai: "sniper" }
+            ]
+          }
+        }
+      ],
+      [
+        {
+          label: "Swamp Path",
+          encounter: {
+            name: "Swamp Drakes", bg: "bg-swamp", goldReward: 34, itemReward: "Mana Crystal", intro: "Young drakes lunge from the swamp reeds.",
+            enemies: [
+              { name: "Drake", slot: "Left", maxHp: 26, armorClass: 13, attackBonus: 6, damage: [1,8,3], initiativeBonus: 2, text: "snaps with poisonous jaws", ai: "aggressive" },
+              { name: "Drake", slot: "Right", maxHp: 26, armorClass: 13, attackBonus: 6, damage: [1,8,3], initiativeBonus: 2, text: "lashes forward with claws", ai: "aggressive" }
+            ]
+          }
+        },
+        {
+          label: "Wolf Riders",
+          encounter: {
+            name: "Goblin Riders", bg: "bg-forest", goldReward: 32, itemReward: "Potion", intro: "Mounted goblins circle your party.",
+            enemies: [
+              { name: "Goblin", slot: "Left", maxHp: 22, armorClass: 13, attackBonus: 5, damage: [1,8,2], initiativeBonus: 4, text: "slashes while charging past", ai: "sniper" },
+              { name: "Goblin", slot: "Center", maxHp: 22, armorClass: 13, attackBonus: 5, damage: [1,8,2], initiativeBonus: 4, text: "rushes in with a hooked blade", ai: "aggressive" },
+              { name: "Goblin", slot: "Right", maxHp: 22, armorClass: 13, attackBonus: 5, damage: [1,8,2], initiativeBonus: 4, text: "fires and darts away", ai: "sniper" }
+            ]
+          }
+        }
+      ],
+      [
+        {
+          label: "Bridge Troll",
+          encounter: {
+            name: "Troll Crossing", bg: "bg-troll", goldReward: 45, itemReward: "Armor Kit", intro: "A troll blocks the bridge and roars.",
+            enemies: [
+              { name: "Troll", slot: "Center", maxHp: 95, armorClass: 14, attackBonus: 7, damage: [2,8,4], initiativeBonus: 0, text: "brings down a massive club", troll: true, ai: "bulwark" }
+            ]
+          }
+        }
+      ],
+      [
+        {
+          label: "Cultist Gate",
+          encounter: {
+            name: "Cultist Fortress", bg: "bg-fortress", goldReward: 42, itemReward: "Greater Potion", intro: "Cultists bar the road to the mountain.",
+            enemies: [
+              { name: "Cultist", slot: "Left", maxHp: 24, armorClass: 13, attackBonus: 6, damage: [1,8,2], initiativeBonus: 2, text: "hurls a shadow-flame bolt", ai: "sniper" },
+              { name: "Cultist", slot: "Center", maxHp: 28, armorClass: 14, attackBonus: 6, damage: [1,8,3], initiativeBonus: 1, text: "chants and lashes out with dark magic", ai: "support" },
+              { name: "Cultist", slot: "Right", maxHp: 24, armorClass: 13, attackBonus: 6, damage: [1,8,2], initiativeBonus: 2, text: "fires a cursed projectile", ai: "sniper" }
+            ]
+          }
+        }
+      ],
+      [
+        {
+          label: "Mountain Ascent",
+          encounter: {
+            name: "Dragon Vanguard", bg: "bg-dragon", goldReward: 58, itemReward: "Armor Kit", intro: "The dragon's vanguard makes a final stand.",
+            enemies: [
+              { name: "Cultist", slot: "Left", maxHp: 30, armorClass: 14, attackBonus: 7, damage: [1,8,3], initiativeBonus: 2, text: "casts a raging ember spell", ai: "sniper" },
+              { name: "Drake", slot: "Center", maxHp: 40, armorClass: 14, attackBonus: 7, damage: [2,6,3], initiativeBonus: 2, text: "charges with savage bites", ai: "bulwark" },
+              { name: "Cultist", slot: "Right", maxHp: 30, armorClass: 14, attackBonus: 7, damage: [1,8,3], initiativeBonus: 2, text: "flings a burning curse", ai: "sniper" }
+            ]
+          }
+        }
+      ],
+      [
+        {
+          label: "Dragon's Lair",
+          encounter: {
+            name: "Dragon's Lair", bg: "bg-dragon", goldReward: 150, itemReward: "Dragon Hoard", intro: "The dragon rises from its hoard. This is the final battle.",
+            enemies: [
+              { name: "Dragon", slot: "Center", maxHp: 180, armorClass: 17, attackBonus: 9, damage: [3,10,5], initiativeBonus: 1, text: "lashes out with claws and flame", dragon: true, phase: 1, ai: "boss" }
+            ]
+          }
+        }
+      ]
+    ];
+
+    let selectedClasses = [];
+    let party = [];
+    let currentStageIndex = -1;
+    let currentEncounter = null;
+    let currentEnemies = [];
+    let turnOrder = [];
+    let turnIndex = 0;
+    let currentActorId = null;
+    let gameOver = false;
+    let gold = 0;
+    let pendingUpgradeHero = null;
+    let pendingTargetAction = null;
+    let chosenPathNames = [];
+    let inventory = { potions: 0, manaCrystals: 0, armorKits: 0, greaterPotions: 0, treasures: 0 };
+
+    function flashDiceRoll(text, kind = "attack") {
+      const el = document.getElementById("diceFlash");
+      if (!el) return;
+      el.className = "";
+      el.textContent = text;
+      void el.offsetWidth;
+      el.className = "show " + kind;
+    }
+
+    function log(text = "") {
+      const box = document.getElementById("battleLog");
+      box.innerHTML += text + "\n";
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function rollDie(sides) {
+      return Math.floor(Math.random() * sides) + 1;
+    }
+
+    function rollDice(num, sides, mod = 0) {
+      let total = mod;
+      const rolls = [];
+      for (let i = 0; i < num; i++) {
+        const r = rollDie(sides);
+        rolls.push(r);
+        total += r;
+      }
+      return { total, rolls, mod };
+    }
+
+    function showPartySelect() {
+      document.getElementById("titleScreen").classList.add("hidden");
+      document.getElementById("selectionPanel").classList.remove("hidden");
+    }
+
+    function toggleClassSelection(className) {
+      const idx = selectedClasses.indexOf(className);
+      if (idx >= 0) {
+        selectedClasses.splice(idx, 1);
+      } else {
+        if (selectedClasses.length >= 4) {
+          alert("Choose exactly four heroes.");
+          return;
+        }
+        selectedClasses.push(className);
+      }
+      document.getElementById("selectedClassesText").textContent =
+        "Selected: " + (selectedClasses.length ? selectedClasses.join(", ") : "none");
+    }
+
+    function createHero(className, index) {
+      const base = classTemplates[className];
+      return {
+        id: "hero" + index,
+        name: className + " " + (index + 1),
+        className,
+        level: 1,
+        xp: 0,
+        xpToNext: 2,
+        hp: base.maxHp,
+        maxHp: base.maxHp,
+        mana: base.maxMana,
+        maxMana: base.maxMana,
+        armorClass: base.armorClass,
+        attackBonus: base.attackBonus,
+        initiativeBonus: base.initiativeBonus,
+        actions: JSON.parse(JSON.stringify(base.actions)),
+        alive: true,
+        isEnemy: false,
+        defending: false,
+        potions: 1,
+        upgradesTaken: 0,
+        equipment: base.equipment,
+        spellbook: [],
+        statuses: []
+      };
+    }
+
+    function saveGame() {
+      const state = {
+        selectedClasses, party, currentStageIndex, currentEncounter, currentEnemies, turnOrder, turnIndex,
+        currentActorId, gameOver, gold, pendingUpgradeHeroId: pendingUpgradeHero ? pendingUpgradeHero.id : null,
+        pendingTargetAction, chosenPathNames, inventory
+      };
+      localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+      log("Game saved.");
+    }
+
+    function loadGame() {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) {
+        alert("No saved game found.");
+        return;
+      }
+      try {
+        const state = JSON.parse(raw);
+        selectedClasses = state.selectedClasses || [];
+        party = state.party || [];
+        currentStageIndex = state.currentStageIndex ?? -1;
+        currentEncounter = state.currentEncounter || null;
+        currentEnemies = state.currentEnemies || [];
+        turnOrder = state.turnOrder || [];
+        turnIndex = state.turnIndex || 0;
+        currentActorId = state.currentActorId || null;
+        gameOver = !!state.gameOver;
+        gold = state.gold || 0;
+        pendingTargetAction = state.pendingTargetAction || null;
+        chosenPathNames = state.chosenPathNames || [];
+        inventory = state.inventory || { potions: 0, manaCrystals: 0, armorKits: 0, greaterPotions: 0, treasures: 0 };
+
+        pendingUpgradeHero = state.pendingUpgradeHeroId ? party.find(h => h.id === state.pendingUpgradeHeroId) : null;
+
+        document.getElementById("titleScreen").classList.add("hidden");
+        document.getElementById("selectionPanel").classList.add("hidden");
+        document.getElementById("gameUI").classList.remove("hidden");
+        document.getElementById("mapPanel").classList.add("hidden");
+        document.getElementById("campPanel").classList.add("hidden");
+        document.getElementById("upgradePanel").classList.add("hidden");
+
+        if (currentEncounter) {
+          document.getElementById("battleLabel").textContent = currentEncounter.name;
+          document.getElementById("battlefield").className = "battlefield " + currentEncounter.bg;
+        }
+
+        updateTopbar();
+        updateDisplay();
+
+        if (pendingUpgradeHero) {
+          showUpgrade(pendingUpgradeHero);
+        } else if (!currentEncounter && !gameOver) {
+          showMapForNextStage();
+        } else if (!gameOver) {
+          processTurn();
+        }
+
+        log("Saved game loaded.");
+      } catch (e) {
+        alert("Could not load save.");
+      }
+    }
+
+    function startGame() {
+      if (selectedClasses.length !== 4) {
+        alert("Please choose exactly four heroes.");
+        return;
+      }
+
+      party = selectedClasses.map((c, i) => createHero(c, i));
+      gold = 15;
+      inventory = { potions: 0, manaCrystals: 0, armorKits: 0, greaterPotions: 0, treasures: 0 };
+      currentStageIndex = -1;
+      currentEncounter = null;
+      currentEnemies = [];
+      turnOrder = [];
+      turnIndex = 0;
+      currentActorId = null;
+      pendingUpgradeHero = null;
+      pendingTargetAction = null;
+      chosenPathNames = [];
+      gameOver = false;
+
+      document.getElementById("selectionPanel").classList.add("hidden");
+      document.getElementById("gameUI").classList.remove("hidden");
+      updateTopbar();
+      log("Your party sets out: " + selectedClasses.join(", ") + ".");
+      log("Starting gold: " + gold);
+      showMapForNextStage();
+    }
+
+    function updateTopbar() {
+      document.getElementById("goldText").textContent = "Gold: " + gold;
+      document.getElementById("encounterText").textContent = "Encounter: " + (currentEncounter ? currentEncounter.name : "-");
+      document.getElementById("pathText").textContent = "Path: " + (chosenPathNames.length ? chosenPathNames.join(" → ") : "-");
+    }
+
+    function showMapForNextStage() {
+      currentStageIndex++;
+      if (currentStageIndex >= mapStages.length) {
+        endGame(true);
+        return;
+      }
+
+      const stage = mapStages[currentStageIndex];
+      document.getElementById("mapPanel").classList.remove("hidden");
+      document.getElementById("campPanel").classList.add("hidden");
+      document.getElementById("upgradePanel").classList.add("hidden");
+      document.getElementById("statusText").textContent = "Choose your next route.";
+
+      document.getElementById("mapButtons").innerHTML = stage.map((node, i) => `
+        <div class="map-node">
+          <strong>${node.label}</strong><br>
+          <span class="small">${node.encounter.name}</span><br>
+          <button style="margin-top:8px;" onclick="chooseMapNode(${i})">Take This Path</button>
+        </div>
+      `).join("");
+
+      currentEncounter = null;
+      currentEnemies = [];
+      turnOrder = [];
+      turnIndex = 0;
+      updateTopbar();
+      renderActions();
+      updateDisplay();
+    }
+
+    function chooseMapNode(index) {
+      const stage = mapStages[currentStageIndex];
+      const node = stage[index];
+      document.getElementById("mapPanel").classList.add("hidden");
+      chosenPathNames.push(node.label);
+      startEncounter(node.encounter);
+    }
+
+    function startEncounter(encounter) {
+      currentEncounter = encounter;
+      currentEnemies = encounter.enemies.map((e, i) => {
+        const isDragon = !!e.dragon;
+
+        let maxHp = e.maxHp;
+        let armorClass = e.armorClass;
+        let attackBonus = e.attackBonus;
+        let damage = [...e.damage];
+
+        if (!isDragon) {
+          maxHp = Math.round(e.maxHp * 1.35);
+          attackBonus = e.attackBonus + 1;
+          armorClass = e.armorClass + (e.name === "Troll" ? 1 : 0);
+          damage[2] = damage[2] + 1;
+        }
+
+        return {
+          id: "enemy" + currentStageIndex + "_" + i,
+          name: e.name + (encounter.enemies.length > 1 ? " " + (i + 1) : ""),
+          baseName: e.name,
+          slot: e.slot,
+          hp: maxHp,
+          maxHp: maxHp,
+          armorClass: armorClass,
+          attackBonus: attackBonus,
+          damage: damage,
+          initiativeBonus: e.initiativeBonus,
+          attackText: e.text,
+          dragon: !!e.dragon,
+          troll: !!e.troll,
+          phase: e.phase || 1,
+          alive: true,
+          isEnemy: true,
+          defending: false,
+          ai: e.ai || "aggressive",
+          statuses: []
+        };
+      });
+
+      clearDefending();
+      pendingTargetAction = null;
+      document.getElementById("battleLabel").textContent = encounter.name;
+      document.getElementById("battlefield").className = "battlefield " + encounter.bg;
+      document.getElementById("statusText").textContent = encounter.intro;
+
+      updateTopbar();
+      log("");
+      log("=== " + encounter.name + " ===");
+      log(encounter.intro);
+      startRound();
+    }
+
+    function getLivingParty() {
+      return party.filter(p => p.alive && p.hp > 0);
+    }
+
+    function getLivingEnemies() {
+      return currentEnemies.filter(e => e.alive && e.hp > 0);
+    }
+
+    function getCharacterById(id) {
+      return [...party, ...currentEnemies].find(x => x.id === id);
+    }
+
+    function clearDefending() {
+      [...party, ...currentEnemies].forEach(x => x.defending = false);
+    }
+
+    function addStatus(target, name, turns) {
+      const existing = target.statuses.find(s => s.name === name);
+      if (existing) {
+        existing.turns = Math.max(existing.turns, turns);
+      } else {
+        target.statuses.push({ name, turns });
+      }
+    }
+
+    function removeExpiredStatuses(target) {
+      target.statuses = target.statuses.filter(s => s.turns > 0);
+    }
+
+    function tickStatuses(target) {
+      const logs = [];
+      for (const status of target.statuses) {
+        if (status.name === "poisoned") {
+          let dmg = 3;
+          target.hp -= dmg;
+          if (target.hp <= 0) { target.hp = 0; target.alive = false; }
+          logs.push(`${target.name} suffers ${dmg} poison damage.`);
+          showFloatingNumber(target.id, dmg, "damage");
+          showEffect(target.id, "shadow");
+        } else if (status.name === "burning") {
+          let dmg = 4;
+          target.hp -= dmg;
+          if (target.hp <= 0) { target.hp = 0; target.alive = false; }
+          logs.push(`${target.name} takes ${dmg} burning damage.`);
+          showFloatingNumber(target.id, dmg, "damage");
+          showEffect(target.id, "fire");
+        }
+        status.turns--;
+      }
+      removeExpiredStatuses(target);
+      return logs;
+    }
+
+    function getAttackBonusWithStatuses(unit) {
+      let bonus = unit.attackBonus;
+      if (unit.statuses.some(s => s.name === "inspired")) bonus += 1;
+      if (unit.statuses.some(s => s.name === "weakened")) bonus -= 1;
+      return bonus;
+    }
+
+    function getArmorClassWithStatuses(unit) {
+      let ac = unit.armorClass;
+      if (unit.statuses.some(s => s.name === "blessed")) ac += 1;
+      return ac;
+    }
+
+    function getEquipmentDamageBonus(hero, actionName) {
+      const eq = hero.equipment;
+      if (eq === "Steel Sword" && (actionName === "Longsword" || actionName === "Power Strike")) return 2;
+      if (eq === "Battle Axe" && actionName === "Power Strike") return 4;
+      if (eq === "Runed Wand" && (actionName === "Fire Bolt" || actionName === "Magic Missile")) return 2;
+      if (eq === "Crystal Staff" && hero.className === "Wizard") return 1;
+      if (eq === "Blessed Mace" && (actionName === "Mace" || actionName === "Sacred Flame")) return 2;
+      if (eq === "Sun Relic" && ["Healing Word","Mass Prayer","Greater Heal"].includes(actionName)) return 2;
+      if (eq === "Twin Daggers" && (actionName === "Dagger" || actionName === "Sneak Attack")) return 2;
+      if (eq === "Venom Edge" && actionName === "Poison Blade") return 2;
+      if (eq === "Holy Blade" && (actionName === "Hammer Strike" || actionName === "Divine Smite")) return 2;
+      if (eq === "Soul Rod" && (actionName === "Eldritch Blast" || actionName === "Hex Bolt")) return 2;
+      if (eq === "Void Grimoire" && hero.className === "Warlock") return 1;
+      if (eq === "Master Lute" && ["Song of Mending","Inspiring Chorus","Thunder Chord"].includes(actionName)) return 2;
+      if (eq === "Silver Rapier" && actionName === "Rapier") return 2;
+      return 0;
+    }
+
+    function startRound() {
+      if (gameOver) return;
+      if (getLivingParty().length === 0) return endGame(false);
+      if (getLivingEnemies().length === 0) return finishEncounter();
+
+      clearDefending();
+      log("");
+      log("--- New Round: Initiative ---");
+
+      turnOrder = [...getLivingParty(), ...getLivingEnemies()].map(unit => {
+        const roll = rollDie(20);
+        const total = roll + unit.initiativeBonus;
+        log(unit.name + " initiative: d20 (" + roll + ") + " + unit.initiativeBonus + " = " + total);
+        return { id: unit.id, total, roll };
+      });
+
+      turnOrder.sort((a, b) => b.total - a.total || b.roll - a.roll);
+      turnIndex = 0;
+      updateDisplay();
+      processTurn();
+    }
+
+    function processTurn() {
+      if (gameOver) return;
+      if (pendingUpgradeHero) return;
+      if (getLivingParty().length === 0) return endGame(false);
+      if (getLivingEnemies().length === 0) return finishEncounter();
+      if (turnIndex >= turnOrder.length) return startRound();
+
+      const actor = getCharacterById(turnOrder[turnIndex].id);
+      if (!actor || !actor.alive || actor.hp <= 0) {
+        turnIndex++;
+        return processTurn();
+      }
+
+      currentActorId = actor.id;
+      updateTurnOrderDisplay();
+
+      const statusLogs = tickStatuses(actor);
+      statusLogs.forEach(m => log(m));
+      if (!actor.alive) {
+        updateDisplay();
+        turnIndex++;
+        return processTurn();
+      }
+
+      if (actor.isEnemy) {
+        document.getElementById("turnBanner").textContent = actor.name + "'s turn";
+        document.getElementById("statusText").textContent = actor.name + " is acting.";
+        renderActions();
+        setTimeout(() => enemyTurn(actor), 700);
+      } else {
+        document.getElementById("turnBanner").textContent = actor.name + "'s turn";
+        document.getElementById("statusText").textContent = "Choose an action for " + actor.name + ".";
+        renderActions(actor);
+      }
+
+      updateDisplay();
+    }
+
+    function updateTurnOrderDisplay() {
+      document.getElementById("turnOrderList").innerHTML = turnOrder.map((entry, i) => {
+        const actor = getCharacterById(entry.id);
+        if (!actor) return "";
+        return `<div class="turn-chip ${i === turnIndex ? "active" : ""}">${actor.name}</div>`;
+      }).join("");
+    }
+
+    function renderActions(actor = null) {
+      const actions = document.getElementById("actionButtons");
+      const targets = document.getElementById("targetButtons");
+      targets.innerHTML = "";
+      clearTargetableEnemies();
+
+      if (gameOver) {
+        actions.innerHTML = "<button disabled>Game Over</button>";
+        return;
+      }
+      if (pendingUpgradeHero) {
+        actions.innerHTML = "<button disabled>Resolve upgrade first</button>";
+        return;
+      }
+      if (!actor || actor.isEnemy) {
+        actions.innerHTML = "<button disabled>Waiting...</button>";
+        return;
+      }
+
+      let html = "";
+      actor.actions.forEach((a, i) => {
+        const cost = a.manaCost ? ` (${a.manaCost} MP)` : "";
+        const disabled = a.manaCost && actor.mana < a.manaCost;
+        html += `<button data-tip="${a.tip || ''}" ${disabled ? "disabled" : ""} onclick="chooseAction('${actor.id}', ${i})">${a.name}${cost}</button>`;
+      });
+      html += `<button data-tip="Use one of this hero's potions to recover HP." ${actor.potions <= 0 ? "disabled" : ""} onclick="usePotion('${actor.id}')">Potion (${actor.potions})</button>`;
+      html += `<button data-tip="Restore mana to a spellcaster." ${inventory.manaCrystals <= 0 ? "disabled" : ""} onclick="useManaCrystal('${actor.id}')">Mana Crystal (${inventory.manaCrystals})</button>`;
+      html += `<button data-tip="A stronger healing item." ${inventory.greaterPotions <= 0 ? "disabled" : ""} onclick="useGreaterPotion('${actor.id}')">Greater Potion (${inventory.greaterPotions})</button>`;
+      actions.innerHTML = html;
+    }
+
+    function chooseAction(actorId, actionIndex) {
+      const actor = getCharacterById(actorId);
+      if (!actor || actor.id !== currentActorId || actor.isEnemy || pendingUpgradeHero) return;
+      const action = actor.actions[actionIndex];
+
+      if (action.manaCost && actor.mana < action.manaCost) {
+        log(actor.name + " does not have enough mana.");
+        return;
+      }
+
+      document.getElementById("targetButtons").innerHTML = "";
+
+      if (["attack","auto","attackDrain","attackPoison","attackWeaken"].includes(action.type)) {
+        pendingTargetAction = { actorId, actionIndex };
+        highlightTargetableEnemies();
+        document.getElementById("statusText").textContent = "Click an enemy on the battlefield.";
+      } else if (action.type === "healAlly") {
+        const targets = getLivingParty();
+        document.getElementById("targetButtons").innerHTML = targets.map(t =>
+          `<button onclick="executeHeroAction(getCharacterById('${actorId}'), getCharacterById('${actorId}').actions[${actionIndex}], getCharacterById('${t.id}'))">Target ${t.name}</button>`
+        ).join("");
+      } else {
+        executeHeroAction(actor, action, null);
+      }
+    }
+
+    function highlightTargetableEnemies() {
+      getLivingEnemies().forEach(enemy => {
+        const el = document.getElementById("sprite-" + enemy.id);
+        if (el) el.classList.add("targetable");
+      });
+    }
+
+    function clearTargetableEnemies() {
+      document.querySelectorAll(".sprite.enemy").forEach(el => el.classList.remove("targetable"));
+      pendingTargetAction = null;
+    }
+
+    function handleEnemySpriteClick(enemyId) {
+      if (!pendingTargetAction) return;
+      const enemy = getCharacterById(enemyId);
+      if (!enemy || !enemy.alive) return;
+      const actor = getCharacterById(pendingTargetAction.actorId);
+      const action = actor.actions[pendingTargetAction.actionIndex];
+      clearTargetableEnemies();
+      executeHeroAction(actor, action, enemy);
+    }
+
+    function showFloatingNumber(targetId, amount, kind = "damage") {
+      const sprite = document.getElementById("sprite-" + targetId);
+      const field = document.getElementById("battlefield");
+      if (!sprite || !field) return;
+      const r1 = sprite.getBoundingClientRect();
+      const r2 = field.getBoundingClientRect();
+      const div = document.createElement("div");
+      div.className = "floating-number " + (kind === "heal" ? "heal-num" : kind === "mana" ? "mana-num" : "damage-num");
+      div.textContent = (kind === "damage" ? "-" : "+") + amount;
+      div.style.left = (r1.left - r2.left + r1.width / 2) + "px";
+      div.style.top = (r1.top - r2.top + 10) + "px";
+      field.appendChild(div);
+      setTimeout(() => div.remove(), 1000);
+    }
+
+    function showEffect(targetId, effectName = "slash") {
+      const sprite = document.getElementById("sprite-" + targetId);
+      if (!sprite) return;
+      const fx = document.createElement("div");
+      fx.className = "effect " + effectName;
+      sprite.appendChild(fx);
+      setTimeout(() => fx.remove(), 550);
+    }
+
+    function spendMana(actor, action) {
+      if (action.manaCost) {
+        actor.mana -= action.manaCost;
+        if (actor.mana < 0) actor.mana = 0;
+      }
+    }
+
+    function usePotion(actorId) {
+      const actor = getCharacterById(actorId);
+      if (!actor || actor.id !== currentActorId || actor.potions <= 0 || pendingUpgradeHero) return;
+      const heal = rollDice(2,4,4);
+      flashDiceRoll("HEAL " + heal.total, "heal");
+      const before = actor.hp;
+      actor.hp = Math.min(actor.maxHp, actor.hp + heal.total);
+      const restored = actor.hp - before;
+      actor.potions--;
+      log("");
+      log(actor.name + "'s turn:");
+      log(actor.name + " drinks a potion.");
+      log(actor.name + " recovers " + restored + " HP.");
+      showFloatingNumber(actor.id, restored, "heal");
+      showEffect(actor.id, "holy");
+      afterAction();
+    }
+
+    function useGreaterPotion(actorId) {
+      const actor = getCharacterById(actorId);
+      if (!actor || actor.id !== currentActorId || inventory.greaterPotions <= 0 || pendingUpgradeHero) return;
+      const heal = rollDice(3,6,6);
+      flashDiceRoll("HEAL " + heal.total, "heal");
+      const before = actor.hp;
+      actor.hp = Math.min(actor.maxHp, actor.hp + heal.total);
+      const restored = actor.hp - before;
+      inventory.greaterPotions--;
+      log("");
+      log(actor.name + "'s turn:");
+      log(actor.name + " uses a Greater Potion.");
+      log(actor.name + " recovers " + restored + " HP.");
+      showFloatingNumber(actor.id, restored, "heal");
+      showEffect(actor.id, "holy");
+      afterAction();
+    }
+
+    function useManaCrystal(actorId) {
+      const actor = getCharacterById(actorId);
+      if (!actor || actor.id !== currentActorId || inventory.manaCrystals <= 0 || actor.maxMana <= 0 || pendingUpgradeHero) return;
+      const gain = 8;
+      flashDiceRoll("MANA +" + gain, "heal");
+      const before = actor.mana;
+      actor.mana = Math.min(actor.maxMana, actor.mana + gain);
+      const restored = actor.mana - before;
+      inventory.manaCrystals--;
+      log("");
+      log(actor.name + "'s turn:");
+      log(actor.name + " uses a Mana Crystal.");
+      log(actor.name + " restores " + restored + " mana.");
+      showFloatingNumber(actor.id, restored, "mana");
+      showEffect(actor.id, "music");
+      afterAction();
+    }
+
+    function executeHeroAction(actor, action, target) {
+      document.getElementById("targetButtons").innerHTML = "";
+      clearTargetableEnemies();
+      log("");
+      log(actor.name + "'s turn:");
+      spendMana(actor, action);
+
+      const equipBonus = getEquipmentDamageBonus(actor, action.name);
+
+      if (action.type === "healSelf") {
+        const heal = rollDice(action.heal[0], action.heal[1], action.heal[2] + equipBonus);
+        flashDiceRoll("HEAL " + heal.total, "heal");
+        const before = actor.hp;
+        actor.hp = Math.min(actor.maxHp, actor.hp + heal.total);
+        const restored = actor.hp - before;
+        log(actor.name + " " + action.text + ".");
+        log(actor.name + " recovers " + restored + " HP.");
+        showFloatingNumber(actor.id, restored, "heal");
+        showEffect(actor.id, action.effect || "holy");
+      }
+
+      else if (action.type === "healAlly") {
+        const heal = rollDice(action.heal[0], action.heal[1], action.heal[2] + equipBonus);
+        flashDiceRoll("HEAL " + heal.total, "heal");
+        const before = target.hp;
+        target.hp = Math.min(target.maxHp, target.hp + heal.total);
+        const restored = target.hp - before;
+        log(actor.name + " " + action.text + " on " + target.name + ".");
+        log(target.name + " recovers " + restored + " HP.");
+        showFloatingNumber(target.id, restored, "heal");
+        showEffect(target.id, action.effect || "holy");
+      }
+
+      else if (action.type === "healParty") {
+        flashDiceRoll("PARTY HEAL", "heal");
+        log(actor.name + " " + action.text + ".");
+        getLivingParty().forEach(hero => {
+          const heal = rollDice(action.heal[0], action.heal[1], action.heal[2] + equipBonus);
+          const before = hero.hp;
+          hero.hp = Math.min(hero.maxHp, hero.hp + heal.total);
+          const restored = hero.hp - before;
+          log(hero.name + " recovers " + restored + " HP.");
+          showFloatingNumber(hero.id, restored, "heal");
+          showEffect(hero.id, action.effect || "holy");
+        });
+      }
+
+      else if (action.type === "restoreMana") {
+        const mana = rollDice(action.manaGain[0], action.manaGain[1], action.manaGain[2] + equipBonus);
+        flashDiceRoll("MANA +" + mana.total, "heal");
+        const before = actor.mana;
+        actor.mana = Math.min(actor.maxMana, actor.mana + mana.total);
+        const restored = actor.mana - before;
+        log(actor.name + " " + action.text + ".");
+        log(actor.name + " restores " + restored + " mana.");
+        showFloatingNumber(actor.id, restored, "mana");
+        showEffect(actor.id, action.effect || "music");
+      }
+
+      else if (action.type === "buffParty") {
+        flashDiceRoll("BUFF!", "heal");
+        log(actor.name + " " + action.text + ".");
+        const turns = (actor.equipment === "Guardian Shield" && action.name === "Sanctuary") ? 4 : 3;
+        getLivingParty().forEach(hero => {
+          addStatus(hero, action.buff, turns);
+          log(hero.name + " gains " + action.buff + " for " + turns + " turns.");
+          showEffect(hero.id, action.effect || "holy");
+        });
+      }
+
+      else if (action.type === "defend") {
+        flashDiceRoll("DEFEND", "attack");
+        actor.defending = true;
+        log(actor.name + " " + action.text + ".");
+      }
+
+      else if (action.type === "auto") {
+        const damage = rollDice(action.damage[0], action.damage[1], action.damage[2] + equipBonus);
+        flashDiceRoll("DMG " + damage.total, "damage");
+        target.hp -= damage.total;
+        if (target.hp <= 0) { target.hp = 0; target.alive = false; }
+        log(actor.name + " " + action.text + " at " + target.name + ".");
+        log("The spell hits automatically.");
+        log(target.name + " takes " + damage.total + " damage.");
+        showFloatingNumber(target.id, damage.total, "damage");
+        showEffect(target.id, action.effect || "shadow");
+      }
+
+      else if (action.type === "attackAll") {
+        flashDiceRoll("AOE!", "damage");
+        log(actor.name + " " + action.text + ".");
+        getLivingEnemies().forEach(enemy => {
+          const damage = rollDice(action.damage[0], action.damage[1], action.damage[2] + equipBonus);
+          enemy.hp -= damage.total;
+          if (enemy.hp <= 0) { enemy.hp = 0; enemy.alive = false; }
+          log(enemy.name + " takes " + damage.total + " damage.");
+          showFloatingNumber(enemy.id, damage.total, "damage");
+          showEffect(enemy.id, action.effect || "fire");
+        });
+      }
+
+      else if (action.type === "attackDrain") {
+        const d20 = rollDie(20);
+        flashDiceRoll("d20: " + d20, "attack");
+        const totalAttack = d20 + getAttackBonusWithStatuses(actor);
+        log(actor.name + " " + action.text + " at " + target.name + ".");
+        log("Attack roll: d20 (" + d20 + ") + " + getAttackBonusWithStatuses(actor) + " = " + totalAttack);
+        if (d20 === 1) {
+          log("Critical miss!");
+        } else if (d20 === 20 || totalAttack >= getArmorClassWithStatuses(target)) {
+          const damage = rollDice(action.damage[0], action.damage[1], action.damage[2] + equipBonus);
+          let finalDamage = damage.total;
+          if (d20 === 20) {
+            finalDamage *= 2;
+            log("Critical hit! Damage is doubled!");
+          }
+          flashDiceRoll("DMG " + finalDamage, "damage");
+          target.hp -= finalDamage;
+          if (target.hp <= 0) { target.hp = 0; target.alive = false; }
+          const healAmount = Math.ceil(finalDamage / 2);
+          const before = actor.hp;
+          actor.hp = Math.min(actor.maxHp, actor.hp + healAmount);
+          const actualHeal = actor.hp - before;
+          log("Hit!");
+          log(target.name + " takes " + finalDamage + " damage.");
+          log(actor.name + " steals " + actualHeal + " HP.");
+          showFloatingNumber(target.id, finalDamage, "damage");
+          showFloatingNumber(actor.id, actualHeal, "heal");
+          showEffect(target.id, action.effect || "shadow");
+        } else {
+          log("Miss!");
+        }
+      }
+
+      else if (action.type === "attackPoison" || action.type === "attackWeaken" || action.type === "attack") {
+        const d20 = rollDie(20);
+        flashDiceRoll("d20: " + d20, "attack");
+        const totalAttack = d20 + getAttackBonusWithStatuses(actor) + (action.bonus || 0);
+        log(actor.name + " " + action.text + " at " + target.name + ".");
+        log("Attack roll: d20 (" + d20 + ") + " + getAttackBonusWithStatuses(actor) + " " +
+          ((action.bonus || 0) >= 0 ? "+ " + (action.bonus || 0) : "- " + Math.abs(action.bonus || 0)) +
+          " = " + totalAttack);
+
+        if (d20 === 1) {
+          log("Critical miss!");
+        } else if (d20 === 20 || totalAttack >= getArmorClassWithStatuses(target)) {
+          const damage = rollDice(action.damage[0], action.damage[1], action.damage[2] + equipBonus);
+          let finalDamage = damage.total;
+          if (d20 === 20) {
+            finalDamage *= 2;
+            log("Critical hit! Damage is doubled!");
+          }
+          flashDiceRoll("DMG " + finalDamage, "damage");
+          target.hp -= finalDamage;
+          if (target.hp <= 0) { target.hp = 0; target.alive = false; }
+          log("Hit!");
+          log(target.name + " takes " + finalDamage + " damage.");
+          showFloatingNumber(target.id, finalDamage, "damage");
+          showEffect(target.id, action.effect || "slash");
+          if (action.type === "attackPoison") {
+            const chance = actor.equipment === "Venom Edge" ? 0.9 : 0.65;
+            if (Math.random() < chance) {
+              addStatus(target, "poisoned", 3);
+              log(target.name + " is poisoned.");
+            }
+          }
+          if (action.type === "attackWeaken") {
+            if (Math.random() < 0.7) {
+              addStatus(target, "weakened", 3);
+              log(target.name + " is weakened.");
+            }
+          }
+        } else {
+          log("Miss!");
+        }
+      }
+
+      triggerBossPhaseIfNeeded();
+      afterAction();
+    }
+
+    function chooseEnemyTarget(enemy) {
+      const livingHeroes = getLivingParty();
+      if (!livingHeroes.length) return null;
+
+      if (enemy.ai === "sniper") {
+        return [...livingHeroes].sort((a,b) => getArmorClassWithStatuses(a) - getArmorClassWithStatuses(b) || a.hp - b.hp)[0];
+      }
+      if (enemy.ai === "bulwark") {
+        return [...livingHeroes].sort((a,b) => b.maxHp - a.maxHp)[0];
+      }
+      if (enemy.ai === "support") {
+        const healers = livingHeroes.filter(h => ["Cleric","Bard","Paladin"].includes(h.className));
+        if (healers.length) return healers[Math.floor(Math.random() * healers.length)];
+      }
+      if (enemy.ai === "boss") {
+        return [...livingHeroes].sort((a,b) => a.hp - b.hp)[0];
+      }
+      return livingHeroes[Math.floor(Math.random() * livingHeroes.length)];
+    }
+
+    function enemyTurn(enemy) {
+      const heroes = getLivingParty();
+      if (!heroes.length) return endGame(false);
+
+      log("");
+      log(enemy.name + "'s turn:");
+
+      if (enemy.dragon) {
+        const roll = Math.random();
+        if (enemy.phase === 2 && roll < 0.33) {
+          flashDiceRoll("INFERNO!", "damage");
+          log(enemy.name + " uses Inferno Sweep!");
+          getLivingParty().forEach(hero => {
+            let dmg = rollDice(2,8,4).total;
+            if (hero.defending) dmg = Math.ceil(dmg / 2);
+            hero.hp -= dmg;
+            addStatus(hero, "burning", 2);
+            if (hero.hp <= 0) { hero.hp = 0; hero.alive = false; }
+            log(hero.name + " takes " + dmg + " fire damage and starts burning.");
+            showFloatingNumber(hero.id, dmg, "damage");
+            showEffect(hero.id, "fire");
+          });
+          return afterAction();
+        }
+      }
+
+      if (enemy.troll && Math.random() < 0.25) {
+        flashDiceRoll("SLAM!", "damage");
+        log(enemy.name + " uses Ground Slam!");
+        getLivingParty().forEach(hero => {
+          let dmg = rollDice(1,8,3).total;
+          if (hero.defending) dmg = Math.ceil(dmg / 2);
+          hero.hp -= dmg;
+          if (hero.hp <= 0) { hero.hp = 0; hero.alive = false; }
+          log(hero.name + " takes " + dmg + " damage.");
+          showFloatingNumber(hero.id, dmg, "damage");
+          showEffect(hero.id, "slash");
+        });
+        return afterAction();
+      }
+
+      const target = chooseEnemyTarget(enemy);
+      const d20 = rollDie(20);
+      flashDiceRoll("Enemy d20: " + d20, "attack");
+      const totalAttack = d20 + getAttackBonusWithStatuses(enemy);
+
+      log(enemy.name + " " + enemy.attackText + " at " + target.name + ".");
+      log("Attack roll: d20 (" + d20 + ") + " + getAttackBonusWithStatuses(enemy) + " = " + totalAttack);
+
+      if (d20 === 1) {
+        log(enemy.name + " critically misses!");
+      } else if (d20 === 20 || totalAttack >= getArmorClassWithStatuses(target)) {
+        const damage = rollDice(enemy.damage[0], enemy.damage[1], enemy.damage[2]);
+        let finalDamage = damage.total;
+
+        if (enemy.dragon) {
+          if (enemy.phase === 1 && Math.random() < 0.35) {
+            const fire = rollDice(2,8,0);
+            finalDamage += fire.total;
+            addStatus(target, "burning", 2);
+            log("Dragon fire surges for an extra " + fire.total + " damage!");
+          } else if (enemy.phase === 2) {
+            const fire = rollDice(3,8,2);
+            finalDamage += fire.total;
+            addStatus(target, "burning", 2);
+            log("The enraged dragon unleashes empowered flame for +" + fire.total + " damage!");
+          }
+        }
+
+        if (target.defending) {
+          finalDamage = Math.ceil(finalDamage / 2);
+          log(target.name + " is defending and reduces the damage.");
+        }
+
+        if (d20 === 20) {
+          finalDamage *= 2;
+          log("Critical hit from " + enemy.name + "!");
+        }
+
+        flashDiceRoll("DMG " + finalDamage, "damage");
+        target.hp -= finalDamage;
+        if (target.hp <= 0) {
+          target.hp = 0;
+          target.alive = false;
+        }
+
+        log("Hit!");
+        log(target.name + " takes " + finalDamage + " damage.");
+        showFloatingNumber(target.id, finalDamage, "damage");
+        showEffect(target.id, enemy.dragon ? "fire" : enemy.baseName === "Cultist" ? "shadow" : "slash");
+      } else {
+        log(enemy.name + " misses!");
+      }
+
+      afterAction();
+    }
+
+    function triggerBossPhaseIfNeeded() {
+      const dragon = currentEnemies.find(e => e.dragon && e.alive);
+      if (!dragon) return;
+
+      if (dragon.phase === 1 && dragon.hp <= Math.floor(dragon.maxHp / 2)) {
+        dragon.phase = 2;
+        dragon.attackBonus += 2;
+        dragon.armorClass += 1;
+        dragon.attackText = "erupts in fury with claws, fangs, and blazing breath";
+        log("");
+        log("!!! The dragon enters Phase 2 and becomes enraged !!!");
+        log("Its attacks grow stronger and it gains powerful special moves.");
+      }
+    }
+
+    function afterAction() {
+      cleanupDead();
+      updateDisplay();
+
+      if (!getLivingParty().length) return endGame(false);
+      if (!getLivingEnemies().length) return finishEncounter();
+
+      turnIndex++;
+      processTurn();
+    }
+
+    function cleanupDead() {
+      [...party, ...currentEnemies].forEach(unit => {
+        if (unit.hp <= 0) {
+          unit.hp = 0;
+          unit.alive = false;
+        }
+      });
+    }
+
+    function finishEncounter() {
+      log("The encounter is won!");
+      gold += currentEncounter.goldReward;
+      grantItemReward(currentEncounter.itemReward);
+      log("The party gains " + currentEncounter.goldReward + " gold. Total gold: " + gold);
+      updateTopbar();
+
+      for (const hero of party) {
+        if (hero.alive) {
+          hero.xp++;
+          if (hero.xp >= hero.xpToNext) {
+            pendingUpgradeHero = hero;
+            showUpgrade(hero);
+            return;
+          }
+        }
+      }
+
+      if (currentStageIndex === mapStages.length - 1) {
+        endGame(true);
+      } else {
+        showCamp();
+      }
+    }
+
+    function grantItemReward(itemName) {
+      if (itemName === "Potion") {
+        inventory.potions++;
+        party.forEach(h => h.potions++);
+        log("The party finds extra potions.");
+      } else if (itemName === "Mana Crystal") {
+        inventory.manaCrystals += 2;
+        log("The party finds 2 Mana Crystals.");
+      } else if (itemName === "Armor Kit") {
+        inventory.armorKits++;
+        party.forEach(h => h.armorClass += 1);
+        log("The party uses an Armor Kit. Everyone gains +1 AC.");
+      } else if (itemName === "Greater Potion") {
+        inventory.greaterPotions += 2;
+        log("The party finds 2 Greater Potions.");
+      } else if (itemName === "Dragon Hoard") {
+        inventory.treasures++;
+        log("The dragon's hoard is yours.");
+      }
+    }
+
+    function showUpgrade(hero) {
+      document.getElementById("upgradePanel").classList.remove("hidden");
+      document.getElementById("upgradeSummary").innerHTML =
+        `<strong>${hero.name}</strong> is ready for an upgrade. Choose one.`;
+
+      const options = [
+        { label: "+10 Max HP", apply: () => { hero.maxHp += 10; hero.hp += 10; } },
+        { label: "+1 Attack Bonus", apply: () => { hero.attackBonus += 1; } },
+        { label: "+1 Armor Class", apply: () => { hero.armorClass += 1; } }
+      ];
+
+      if (hero.maxMana > 0) {
+        options.push({ label: "+5 Max Mana", apply: () => { hero.maxMana += 5; hero.mana += 5; } });
+      }
+
+      if (hero.className === "Wizard") {
+        if (!hero.spellbook.includes("Lightning Bolt")) {
+          options.push({
+            label: "Learn Lightning Bolt",
+            apply: () => {
+              hero.spellbook.push("Lightning Bolt");
+              hero.actions.push({
+                name: "Lightning Bolt", type: "attack", damage: [3,6,4], bonus: 1, manaCost: 6,
+                text: "casts Lightning Bolt", effect: "music", tip: "Heavy single-target spell."
+              });
+            }
+          });
+        }
+        if (!hero.spellbook.includes("Frost Nova")) {
+          options.push({
+            label: "Learn Frost Nova",
+            apply: () => {
+              hero.spellbook.push("Frost Nova");
+              hero.actions.push({
+                name: "Frost Nova", type: "attackAll", damage: [2,6,2], manaCost: 7,
+                text: "unleashes Frost Nova", effect: "music", tip: "Damages all enemies."
+              });
+            }
+          });
+        }
+      }
+
+      if (hero.className === "Cleric") {
+        if (!hero.spellbook.includes("Greater Heal")) {
+          options.push({
+            label: "Learn Greater Heal",
+            apply: () => {
+              hero.spellbook.push("Greater Heal");
+              hero.actions.push({
+                name: "Greater Heal", type: "healAlly", heal: [3,6,6], manaCost: 7,
+                text: "casts Greater Heal", effect: "holy", tip: "A powerful single-target heal."
+              });
+            }
+          });
+        }
+        if (!hero.spellbook.includes("Holy Nova")) {
+          options.push({
+            label: "Learn Holy Nova",
+            apply: () => {
+              hero.spellbook.push("Holy Nova");
+              hero.actions.push({
+                name: "Holy Nova", type: "attackAll", damage: [2,6,3], manaCost: 6,
+                text: "calls forth Holy Nova", effect: "holy", tip: "Holy damage to all enemies."
+              });
+            }
+          });
+        }
+      }
+
+      document.getElementById("upgradeButtons").innerHTML = options.map((opt, i) =>
+        `<button onclick="applyUpgrade(${i})">${opt.label}</button>`
+      ).join("");
+
+      window.currentUpgradeOptions = options;
+      document.getElementById("statusText").textContent = hero.name + " is choosing an upgrade.";
+      renderActions();
+    }
+
+    function applyUpgrade(index) {
+      if (!pendingUpgradeHero) return;
+      const hero = pendingUpgradeHero;
+      const opt = window.currentUpgradeOptions[index];
+      if (!opt) return;
+
+      opt.apply();
+      hero.level++;
+      hero.xp = 0;
+      hero.xpToNext++;
+      hero.upgradesTaken++;
+      hero.potions++;
+      log(hero.name + " levels up to level " + hero.level + " and gains: " + opt.label + ".");
+
+      pendingUpgradeHero = null;
+      document.getElementById("upgradePanel").classList.add("hidden");
+
+      const another = party.find(h => h.alive && h.xp >= h.xpToNext);
+      if (another) {
+        pendingUpgradeHero = another;
+        showUpgrade(another);
+        return;
+      }
+
+      if (currentStageIndex === mapStages.length - 1 && !getLivingEnemies().length) {
+        endGame(true);
+      } else {
+        showCamp();
+      }
+      updateDisplay();
+    }
+
+    function showCamp() {
+      document.getElementById("campPanel").classList.remove("hidden");
+      document.getElementById("upgradePanel").classList.add("hidden");
+      document.getElementById("turnBanner").textContent = "Camp";
+      document.getElementById("statusText").textContent = "Your party makes camp.";
+
+      document.getElementById("campSummary").innerHTML = party.map(hero =>
+        `${hero.name} — HP ${hero.hp}/${hero.maxHp}` +
+        (hero.maxMana > 0 ? `, MP ${hero.mana}/${hero.maxMana}` : ``) +
+        `, Potions ${hero.potions}, Level ${hero.level}`
+      ).join("<br>");
+
+      document.getElementById("campButtons").innerHTML = `
+        <button onclick="campRest()">Rest</button>
+        <button onclick="campBuyPotion()">Buy Potion for All (18 gold)</button>
+        <button onclick="campRestoreMana()">Restore Mana (12 gold)</button>
+        <button onclick="campRevive()">Revive One Fallen Hero (25 gold)</button>
+        <button onclick="leaveCamp()">Continue</button>
+      `;
+
+      renderShop();
+      renderActions();
+      document.getElementById("targetButtons").innerHTML = "";
+      updateTopbar();
+      updateDisplay();
+    }
+
+    function renderShop() {
+      const html = party.map(hero => {
+        const options = Object.entries(equipmentCatalog)
+          .filter(([_, item]) => item.className === hero.className)
+          .map(([name, item]) => {
+            const disabled = gold < item.cost ? "disabled" : "";
+            return `<button ${disabled} data-tip="${item.desc}" onclick="buyEquipment('${hero.id}','${name.replace(/'/g,"\\'")}')">${name} (${item.cost}g)</button>`;
+          }).join("");
+        return `
+          <div class="shop-card ${hero.alive ? "" : "dead"}">
+            <strong>${hero.name}</strong><br>
+            <span class="small">Current equipment: ${hero.equipment}</span>
+            <div class="shop-buttons">${options || "<span class='small'>No shop items available.</span>"}</div>
+          </div>
+        `;
+      }).join("");
+      document.getElementById("shopButtons").innerHTML = html;
+    }
+
+    function buyEquipment(heroId, itemName) {
+      const hero = getCharacterById(heroId);
+      const item = equipmentCatalog[itemName];
+      if (!hero || !item || gold < item.cost) return;
+      gold -= item.cost;
+      item.apply(hero);
+
+      if (itemName === "Crystal Staff") {
+        hero.maxMana += 4;
+        hero.mana += 4;
+      }
+      if (itemName === "Sun Relic") {
+        hero.maxMana += 3;
+        hero.mana += 3;
+      }
+      if (itemName === "Guardian Shield") {
+        hero.armorClass += 1;
+      }
+      if (itemName === "Void Grimoire") {
+        hero.maxMana += 4;
+        hero.mana += 4;
+      }
+
+      log(hero.name + " buys " + itemName + ".");
+      updateTopbar();
+      renderShop();
+      updateDisplay();
+    }
+
+    function campRest() {
+      party.forEach(hero => {
+        if (hero.alive) {
+          const heal = rollDice(2,6,4).total;
+          hero.hp = Math.min(hero.maxHp, hero.hp + heal);
+          hero.statuses = [];
+        }
+      });
+      log("The party rests, recovers health, and clears status effects.");
+      showCamp();
+    }
+
+    function campBuyPotion() {
+      if (gold < 18) {
+        log("Not enough gold.");
+        return;
+      }
+      gold -= 18;
+      party.forEach(hero => { if (hero.alive) hero.potions++; });
+      inventory.potions += 4;
+      log("The party buys potions.");
+      updateTopbar();
+      showCamp();
+    }
+
+    function campRestoreMana() {
+      if (gold < 12) {
+        log("Not enough gold.");
+        return;
+      }
+      gold -= 12;
+      party.forEach(hero => { if (hero.alive && hero.maxMana > 0) hero.mana = hero.maxMana; });
+      log("The spellcasters restore their mana.");
+      updateTopbar();
+      showCamp();
+    }
+
+    function campRevive() {
+      if (gold < 25) {
+        log("Not enough gold.");
+        return;
+      }
+      const fallen = party.find(hero => !hero.alive);
+      if (!fallen) {
+        log("No fallen hero needs reviving.");
+        return;
+      }
+      gold -= 25;
+      fallen.alive = true;
+      fallen.hp = Math.ceil(fallen.maxHp / 2);
+      if (fallen.maxMana > 0) fallen.mana = Math.ceil(fallen.maxMana / 2);
+      log(fallen.name + " is revived at camp.");
+      updateTopbar();
+      showCamp();
+    }
+
+    function leaveCamp() {
+      document.getElementById("campPanel").classList.add("hidden");
+      showMapForNextStage();
+    }
+
+    function endGame(victory) {
+      gameOver = true;
+      document.getElementById("mapPanel").classList.add("hidden");
+      document.getElementById("campPanel").classList.add("hidden");
+      document.getElementById("upgradePanel").classList.add("hidden");
+      document.getElementById("targetButtons").innerHTML = "";
+      clearTargetableEnemies();
+
+      if (victory) {
+        document.getElementById("statusText").textContent = "The dragon has fallen. Your party is victorious!";
+        document.getElementById("turnBanner").textContent = "Victory";
+        log("");
+        log("The dragon crashes to the ground.");
+        log("RESULT: THE PARTY WINS THE ADVENTURE!");
+      } else {
+        document.getElementById("statusText").textContent = "Your party has fallen.";
+        document.getElementById("turnBanner").textContent = "Defeat";
+        log("");
+        log("The heroes are defeated.");
+        log("RESULT: THE ENEMIES WIN.");
+      }
+
+      renderActions();
+      updateDisplay();
+    }
+
+    function renderBar(cur, max, cls) {
+      const pct = max > 0 ? Math.max(0, (cur / max) * 100) : 0;
+      return `<div class="bar-wrap"><div class="${cls}" style="width:${pct}%"></div></div>`;
+    }
+
+    function renderStatuses(unit) {
+      if (!unit.statuses || !unit.statuses.length) return `<span class="small">Statuses: none</span>`;
+      return unit.statuses.map(s => `<span class="status-tag">${s.name} (${s.turns})</span>`).join("");
+    }
+
+    function updateDisplay() {
+      updateTopbar();
+
+      document.getElementById("partyInfo").innerHTML = party.length ? party.map(hero => `
+        <div class="char-card ${hero.alive ? "" : "dead"}">
+          <div class="card-top">
+            <div class="portrait">${portraits[hero.className]}</div>
+            <div>
+              <strong>${hero.name}</strong> (${hero.className})<br>
+              Level ${hero.level} | AC ${getArmorClassWithStatuses(hero)} | Attack +${getAttackBonusWithStatuses(hero)}
+            </div>
+          </div>
+          <div class="small">HP: ${hero.hp}/${hero.maxHp}</div>
+          ${renderBar(hero.hp, hero.maxHp, "hp-bar")}
+          <div class="small">Mana: ${hero.maxMana > 0 ? hero.mana + "/" + hero.maxMana : "none"}</div>
+          ${hero.maxMana > 0 ? renderBar(hero.mana, hero.maxMana, "mana-bar") : ""}
+          <div class="small">Potions: ${hero.potions} | XP: ${hero.xp}/${hero.xpToNext} | ${hero.defending ? "Defending" : "Normal"}</div>
+          <div>${renderStatuses(hero)}</div>
+        </div>
+      `).join("") : "No heroes.";
+
+      document.getElementById("enemyInfo").innerHTML = currentEnemies.length ? currentEnemies.map(enemy => `
+        <div class="enemy-card ${enemy.alive ? "" : "dead"}">
+          <div class="card-top">
+            <div class="portrait">${portraits[enemy.baseName] || "👾"}</div>
+            <div>
+              <strong>${enemy.name}</strong><br>
+              Slot: ${enemy.slot} | AC ${getArmorClassWithStatuses(enemy)} | Attack +${getAttackBonusWithStatuses(enemy)}${enemy.dragon ? ` | Phase ${enemy.phase}` : ``}<br>
+              <span class="small">AI: ${enemy.ai}</span>
+            </div>
+          </div>
+          <div class="small">HP: ${enemy.hp}/${enemy.maxHp}</div>
+          ${renderBar(enemy.hp, enemy.maxHp, "hp-bar")}
+          <div>${renderStatuses(enemy)}</div>
+        </div>
+      `).join("") : "No enemies.";
+
+      document.getElementById("inventoryInfo").innerHTML = `
+        <div class="inv-card">
+          <div class="small"><strong>Party Items</strong></div>
+          <div class="small">Potions found: ${inventory.potions}</div>
+          <div class="small">Mana Crystals: ${inventory.manaCrystals}</div>
+          <div class="small">Armor Kits used: ${inventory.armorKits}</div>
+          <div class="small">Greater Potions: ${inventory.greaterPotions}</div>
+          <div class="small">Treasures: ${inventory.treasures}</div>
+        </div>
+        ${party.map(hero => `
+          <div class="inv-card ${hero.alive ? "" : "dead"}">
+            <div class="small"><strong>${hero.name}</strong></div>
+            <div class="small">Equipment: ${hero.equipment}</div>
+            <div class="small">Spellbook: ${hero.spellbook.length ? hero.spellbook.join(", ") : "None"}</div>
+          </div>
+        `).join("")}
+      `;
+
+      document.getElementById("heroSprites").innerHTML = party.map(hero => `
+        <div id="sprite-${hero.id}" class="sprite ${hero.alive ? "" : "dead"}">
+          <div class="sprite-icon">${portraits[hero.className]}</div>
+          <div class="sprite-name">${hero.name}</div>
+          <div class="sprite-slot">${hero.hp}/${hero.maxHp} HP</div>
+        </div>
+      `).join("");
+
+      document.getElementById("enemySprites").innerHTML = currentEnemies.map(enemy => `
+        <div id="sprite-${enemy.id}" class="sprite enemy ${enemy.alive ? "" : "dead"} ${enemy.phase === 2 ? "phase2" : ""}" onclick="handleEnemySpriteClick('${enemy.id}')">
+          <div class="sprite-icon">${portraits[enemy.baseName] || "👾"}</div>
+          <div class="sprite-name">${enemy.name}</div>
+          <div class="sprite-slot">${enemy.slot} • ${enemy.hp}/${enemy.maxHp} HP${enemy.dragon ? ` • P${enemy.phase}` : ""}</div>
+        </div>
+      `).join("");
+
+      updateTurnOrderDisplay();
+      if (pendingTargetAction) highlightTargetableEnemies();
+    }
+
+    function restartGame() {
+      selectedClasses = [];
+      party = [];
+      currentStageIndex = -1;
+      currentEncounter = null;
+      currentEnemies = [];
+      turnOrder = [];
+      turnIndex = 0;
+      currentActorId = null;
+      pendingUpgradeHero = null;
+      pendingTargetAction = null;
+      chosenPathNames = [];
+      gameOver = false;
+      gold = 0;
+      inventory = { potions: 0, manaCrystals: 0, armorKits: 0, greaterPotions: 0, treasures: 0 };
+
+      document.getElementById("titleScreen").classList.remove("hidden");
+      document.getElementById("selectionPanel").classList.add("hidden");
+      document.getElementById("gameUI").classList.add("hidden");
+      document.getElementById("mapPanel").classList.add("hidden");
+      document.getElementById("campPanel").classList.add("hidden");
+      document.getElementById("upgradePanel").classList.add("hidden");
+      document.getElementById("selectedClassesText").textContent = "Selected: none";
+      document.getElementById("battleLog").innerHTML = "";
+    }
+  </script>
+</body>
+</html>
+```

@@ -1,0 +1,21 @@
+.spell{
+    font-style: italic;
+    color: rgba(255, 12, 12, 0.841);
+}
+.class{
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bold;
+    text-decoration: underline;
+    text-align: center;
+}
+body{
+    background-color: #e4fff8bc;
+}
+.singleClass{
+    border: 5px solid black;
+    margin: 20px;
+    margin-right: 70px;
+}
+.centerImage{
+    text-align: center;
+}

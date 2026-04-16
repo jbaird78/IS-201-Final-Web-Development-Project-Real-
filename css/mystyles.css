@@ -19,3 +19,8 @@ body{
 .centerImage{
     text-align: center;
 }
+.link{
+    text-decoration: underline;
+    font-style: italic;
+    color: blue;
+}
